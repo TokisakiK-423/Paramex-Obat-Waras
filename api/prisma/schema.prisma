@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Admin {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
 model Wisata {
   id          Int       @id @default(autoincrement())
   nama        String
@@ -22,4 +29,38 @@ model Wisata {
   galeri      Galeri[]
   reviews     Review[]
   bookings    Booking[]
+}
+
+model Galeri {
+  id        Int      @id @default(autoincrement())
+  wisataId  Int
+  url       String
+  caption   String?
+  createdAt DateTime @default(now())
+
+  wisata    Wisata   @relation(fields: [wisataId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  wisataId   Int
+  nama       String
+  rating     Int
+  komentar   String
+  createdAt  DateTime @default(now())
+
+  wisata     Wisata   @relation(fields: [wisataId], references: [id], onDelete: Cascade)
+}
+
+model Booking {
+  id         Int      @id @default(autoincrement())
+  wisataId   Int
+  nama       String
+  noHp       String
+  jumlahTiket Int
+  totalBayar Int
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+
+  wisata     Wisata   @relation(fields: [wisataId], references: [id], onDelete: Cascade)
 }
