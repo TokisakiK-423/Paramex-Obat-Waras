@@ -22,10 +22,8 @@ export class AuthService {
       throw new UnauthorizedException('Username atau password salah');
     }
 
-    const token = await this.jwtService.signAsync({
-      sub: admin.id,
-      username: admin.username,
-    });
+    const payload = { sub: admin.id, username: admin.username };
+    const token = await this.jwtService.signAsync(payload);
 
     return {
       message: 'Login berhasil',
