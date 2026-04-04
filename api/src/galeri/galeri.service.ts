@@ -1,26 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateGaleriDto } from './dto/create-galeri.dto';
-import { UpdateGaleriDto } from './dto/update-galeri.dto';
 
 @Injectable()
 export class GaleriService {
-  create(createGaleriDto: CreateGaleriDto) {
-    return 'This action adds a new galeri';
+  constructor(private prisma: PrismaService) {}
+
+  create(data: CreateGaleriDto) {
+    return this.prisma.galeri.create({ data });
   }
 
   findAll() {
-    return `This action returns all galeri`;
+    return this.prisma.galeri.findMany({
+      include: { wisata: true },
+      orderBy: { id: 'desc' },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} galeri`;
-  }
-
-  update(id: number, updateGaleriDto: UpdateGaleriDto) {
-    return `This action updates a #${id} galeri`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} galeri`;
+  async remove(id: number) {
+    const data = await this.prisma.galeri.findUnique({ where: { id } });
+    if (!data) throw new NotFoundException('Galeri tidak ditemukan');
+    return this.prisma.galeri.delete({ where: { id } });
   }
 }
