@@ -23,37 +23,3 @@ model Wisata {
   reviews     Review[]
   bookings    Booking[]
 }
-
-model Galeri {
-  id        Int      @id @default(autoincrement())
-  wisataId  Int
-  url       String
-  caption   String?
-  createdAt DateTime @default(now())
-
-  wisata    Wisata   @relation(fields: [wisataId], references: [id], onDelete: Cascade)
-}
-
-model Review {
-  id         Int      @id @default(autoincrement())
-  wisataId   Int
-  nama       String
-  rating     Int
-  komentar   String
-  createdAt  DateTime @default(now())
-
-  wisata     Wisata   @relation(fields: [wisataId], references: [id], onDelete: Cascade)
-}
-
-model Booking {
-  id         Int      @id @default(autoincrement())
-  wisataId   Int
-  nama       String
-  noHp       String
-  jumlahTiket Int
-  totalBayar Int
-  status     String   @default("pending")
-  createdAt  DateTime @default(now())
-
-  wisata     Wisata   @relation(fields: [wisataId], references: [id], onDelete: Cascade)
-}
