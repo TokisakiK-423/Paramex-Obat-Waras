@@ -1,44 +1,36 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { WisataService } from './wisata.service';
+import { CreateWisataDto } from './dto/create-wisata.dto';
+import { UpdateWisataDto } from './dto/update-wisata.dto';
 
-@Injectable()
-export class WisataService {
-  constructor(private prisma: PrismaService) {}
+@ApiTags('wisata')
+@Controller('wisata')
+export class WisataController {
+  constructor(private readonly wisataService: WisataService) {}
 
-  async create(data: any) {
-    const wisata = await this.prisma.wisata.create({ data });
-    return wisata;
+  @Post()
+  create(@Body() dto: CreateWisataDto) {
+    return this.wisataService.create(dto);
   }
 
-  async findAll() {
-    return this.prisma.wisata.findMany({
-      include: { galeri: true, reviews: true, bookings: true },
-      orderBy: { id: 'desc' },
-    });
+  @Get()
+  findAll() {
+    return this.wisataService.findAll();
   }
 
-  async findOne(id: number) {
-    const wisata = await this.prisma.wisata.findUnique({
-      where: { id },
-      include: { galeri: true, reviews: true, bookings: true },
-    });
-
-    if (!wisata) throw new NotFoundException('Wisata tidak ditemukan');
-    return wisata;
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.wisataService.findOne(id);
   }
 
-  async update(id: number, data: any) {
-    await this.findOne(id);
-    return this.prisma.wisata.update({
-      where: { id },
-      data,
-    });
+  @Patch(':id')
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateWisataDto) {
+    return this.wisataService.update(id, dto);
   }
 
-  async remove(id: number) {
-    await this.findOne(id);
-    return this.prisma.wisata.delete({
-      where: { id },
-    });
+  @Delete(':id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.wisataService.remove(id);
   }
 }
